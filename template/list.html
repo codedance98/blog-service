@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>node demo</title>
+    <style>
+      table{
+        border-collapse:collapse;
+        border:1px solid #666'
+      }
+    </style>
+</head>
+<body>
+    <button>新增</button>
+    <table border=1></table>
+    <p class='total'>总数:0</p>
+</body>
+<script>
+  document.querySelector('button').onclick = function(e){
+    window.location.href = '/add';
+  }
+  // 获取兄弟节点
+  function siblings(elm){
+    var a = [];
+    var p = elm.parentNode.parentNode.children;
+    for(var i = 0; i < p.length; i++){
+      if(p[i].nodeType == 1 && p[i] != elm){
+        a.push(p[i])
+      }
+    }
+    return a;
+  }
+  
+  window.onload = function(){
+    getData();
+    document.querySelector('table').addEventListener('click', function(e) {
+      console.log(e.target.nodeName)
+      if (e.target.nodeName === 'BUTTON') {
+          let siblingsNode = siblings(e.target);
+          let itemID = siblingsNode[0].innerHTML;
+          if(e.target.innerHTML === '编辑'){
+            window.open(`/edit?id=${itemID}`)
+          }else if(e.target.innerHTML === '删除'){
+            if(confirm(`你确定要删除ID为${itemID}这项吗`)){
+              del(itemID)
+            }else{
+
+            }
+          }
+      }
+    })
+  };
+  // 获取列表数据
+  function getData(){
+    fetch('/v1/findAll',{method: 'GET'}).then(function(response) {
+      return response.json();
+    })
+    .then(function(response) {
+      console.log(response)
+      let dom = document.querySelector('table');
+      dom.innerHTML += `<tr>
+        <td>id</td>
+        <td>标题</td>
+        <td>作者</td>
+        <td>内容</td>
+        <td>编辑</td>
+      </tr>`
+      document.querySelector('.total').innerHTML = `总数:${response.length}`  
+      response.forEach((item)=>{
+        document.querySelector('table').innerHTML += `
+        <tr>
+          <td id='itemId'>${item.id}</td>
+          <td>${item.title}</td>
+          <td>${item.author}</td>
+          <td>${item.content}</td>
+          <td><button>编辑</button><button>删除</button></td>
+        </tr>` 
+      })
+    });
+  }
+  // 删除方法
+  function del(_id){
+    fetch('/v1/delete',{
+      method: 'DELETE',
+      mode:'cors',
+      headers: {
+  　　　　'Content-Type': 'application/json'
+  　　},
+      body:JSON.stringify({
+        id:_id
+      })
+    }).then(function(response) {
+      console.log(response)
+      return response.json();
+    }).then((response)=>{
+      alert(`删除成功`);
+      console.log(response)
+    }).catch((e)=>{
+      console.log(e)
+    })
+  }
+</script>
+</html>

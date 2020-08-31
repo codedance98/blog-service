@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>node demo</title>
+</head>
+<body>
+  name:<input type="text" name="name">
+  <br>
+  <br>
+  <br>
+  age:<input type="number" name="age">
+  <br>
+  <br>
+  <br>
+  sex:<input type="text" name="sex">
+  <br>
+  <br>
+  <br>
+  email:<input type="email" name="email">
+  <br>
+  <br>
+  <br>
+  instructions:<input type="text" name="instructions">
+  <br>
+  <br>
+  <br>
+  <input type="submit" value="submit" class='submitButton'>
+</body>
+<script>
+  console.log(getParamsObj(window.location.href))
+  let _id = getParamsObj(window.location.href).id
+  function getParamsObj(_fullUrl){
+    console.log(_fullUrl)
+    let temp = _fullUrl.split('?')[1].split('&');
+    let result = {};
+    temp.forEach((item, idx)=>{
+      result[item.split('=')[0]] = item.split('=')[1]
+    })
+    return result
+  }
+  console.log(_id)
+  // document.querySelector('.submitButton').onclick = function(e){
+  //   console.log(document.querySelector('input[name=name]').value)
+  //   fetch('v1/create',{
+  //     method:'post',
+  //     mode: 'cors',
+  //     headers: {
+  // 　　　　'Content-Type': 'application/json'
+  // 　　},
+  //     body:JSON.stringify({
+  //       name:document.querySelector('input[name=name]').value,
+  //       age:document.querySelector('input[name=age]').value,
+  //       sex:document.querySelector('input[name=sex]').value,
+  //       email:document.querySelector('input[name=email]').value,
+  //       instructions:document.querySelector('input[name=instructions]').value,
+  //     })
+  //   }).then((response)=>{
+  //     if (response.ok) {
+  //       return response.json()
+  //     } else {
+  //       return Promise.reject('something went wrong!')
+  //       alert(`something went wrong!`);
+  //     }
+  //   }).then((response)=>{
+  //       alert(`保存成功`);
+  //       window.history.go(-1);
+  //       console.log(response)
+  //   })
+  // }
+</script>
+</html>
