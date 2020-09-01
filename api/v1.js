@@ -6,70 +6,54 @@ let api = express.Router();
 // db.connect(db_add);
 const connection = require ('../db/main.js');
 
-api.post("/create", function(req, res) {
+api.post("/admin/create", function(req, res) {
     console.log('进入create')
     let t = {
-        title:req.body.title,
-        author:req.body.author,
-        content:req.body.content
+        title: req.body.title,
+        type: JSON.stringify(req.body.type),
+        content: req.body.content
     };
-    var sql = 'insert into article set title=? , content=? , author=?'
-    var add_value = [t.title, t.content, t.author]
+    var sql = 'insert into article set title=? , type=? , content=?'
+    var add_value = [t.title, t.type, t.content]
     connection.query(sql, add_value, function (err, result) {
-        console.log(result)
-        console.log(111)
-        console.log(err)
         if (err) {
-            console.log('新增数据失败');
-            res.send('新增数据失败') //  
+            console.log(err);
+            res.json({
+                msg: '错误',
+                code: 400
+            })  
         }else{
-            res.send('增加数据成功') //   响应内容 增加数据成功
-        }   
-        
+            res.json({
+                msg: '操作成功',
+                code: 0
+            })
+        }
     });
-    // var user = new UserModel({
-    //     name:req.body.name,
-    //     age:req.body.age,
-    //     sex:req.body.sex,
-    //     email:req.body.email,
-    //     instructions:req.body.instructions
-    // });
-    // user.save(function (err) {
-    //     if (err) {
-    //         console.log("Error:" + err.message);
-    //     }
-    //     else {
-    //         res.json({
-    //             ...t,
-    //             msg:'保存成功'
-    //         });
-    //     }
-    // });
 });
 
-api.get("/findAll", function(req, res) {
-    // UserModel.find(function(err, ret){
-    //     // console.log(err)
-    //     // console.log(ret)
-    //     if(err){
-    //        console.log('查询失败')
-    //     } else {
-    //         console.log(ret)
-    //         res.json(ret);
-    //     }
-    // })
+api.get("/web/findAll", function(req, res) {
+    console.log('findall')
     var sql = 'select * from article';
     connection.query(sql, function (err, result) {
-        // 没报错的情况err为null
         if (err) {
             console.log('err:', err.message);
         }
-        console.log(11)
-        console.log(result);
         res.status(200),
         res.json(result)
     });
-    
+});
+api.get("/web/findOne", function(req, res) {
+    console.log('findOne')
+    // req.params  {}
+    console.log(req.query.id)
+    let sql = `select * from article where id = '${req.query.id}'`;
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('err:', err.message);
+        }
+        res.status(200),
+        res.json(result[0])
+    });
 });
 api.delete("/delete", async function(req, res) {
     // let wherestr = {'_id' : req.id};
@@ -91,4 +75,44 @@ api.delete("/delete", async function(req, res) {
         // }
     // })
 });
+
+api.post("/admin/user/login", async function(req, res) {
+    let t = {
+        account: req.body.account,
+        password: req.body.password
+    };
+    let sql = `select * from admin_user where account = '${t.account}' and password = '${t.password}'`;
+    // console.log(sql)
+    connection.query(sql, function (err, result) {
+        // console.log(result)
+        if (err || result.length == 0) {
+            res.json({
+                msg: '账号或密码错误',
+                code: 400
+            })
+            console.log(err)
+        } else {
+            res.json({
+                msg: '操作成功',
+                code: 0
+            })
+        }
+    })
+});
+
+api.post("/admin/user/register", async function(req, res) {
+    let t = [req.body.account, req.body.password]
+    let sql = `insert into admin_user set account=?, password=?`;
+    connection.query(sql, t, function (err, result) {
+        if(err){
+            res.status(200)
+            res.json("失败")
+            console.log(err)
+        }else{
+            res.status(200)
+            res.json("成功")
+        }
+    })
+});
+
 module.exports = api;
