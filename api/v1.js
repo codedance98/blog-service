@@ -1,16 +1,14 @@
 const express = require("express");
 const db = require('mongoose');
 let api = express.Router();
-// const UserModel = require("../db/models/user.js");
-// const db_add = 'mongodb+srv://codedance98:liliangqi1@cluster0-cjz8o.mongodb.net/test?retryWrites=true&w=majority';
-// db.connect(db_add);
+
 const connection = require ('../db/main.js');
 
-api.post("/admin/create", function(req, res) {
+api.post("/article/create", function(req, res) {
     console.log('进入create')
     let t = {
         title: req.body.title,
-        type: JSON.stringify(req.body.type),
+        type: req.body.type.join(','),
         content: req.body.content
     };
     var sql = 'insert into article set title=? , type=? , content=?'
@@ -31,49 +29,72 @@ api.post("/admin/create", function(req, res) {
     });
 });
 
-api.get("/web/findAll", function(req, res) {
+api.get("/article/findAll", function(req, res) {
     console.log('findall')
     var sql = 'select * from article';
     connection.query(sql, function (err, result) {
         if (err) {
             console.log('err:', err.message);
+        }else{
+            result = result.map((item)=>{
+                console.log(item.type)
+                return {
+                    ...item,
+                    type: item.type ? item.type.split(',') : ''
+                }
+            })
+            res.status(200),
+            res.json({
+                code: 0,
+                msg: '',
+                data: result
+            })
         }
-        res.status(200),
-        res.json(result)
     });
 });
-api.get("/web/findOne", function(req, res) {
-    console.log('findOne')
-    // req.params  {}
-    console.log(req.query.id)
+api.get("/article/findOne", function(req, res) {
     let sql = `select * from article where id = '${req.query.id}'`;
     connection.query(sql, function (err, result) {
         if (err) {
             console.log('err:', err.message);
         }
+        result[0].type = result[0].type ? result[0].type.split(',') : ''
         res.status(200),
-        res.json(result[0])
+        res.json({
+            code: 0,
+            msg: '',
+            data: result[0]
+        })
     });
 });
-api.delete("/delete", async function(req, res) {
-    // let wherestr = {'_id' : req.id};
-    await UserModel.findByIdAndDelete(req.body.id, req.body)
-    res.json({
-        msg:'删除成功'
+api.put("/article/update", function(req, res) {
+    let t  = req.body
+    console.log(t.type)
+    // let sql = `update article set title = '${t.title}' , type = '${t.type}' , content = '${t.content}' where id = '${t.id}'`;
+    let sql = `update article set title = '${t.title}' , type = '${t.type.join(',')}' , content = '${t.content}' where id = '${t.id}'`;
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('err:', err.message);
+        }
+        res.status(200),
+        res.json({
+            code: 0,
+            msg: ''
+        })
     });
-    // res.json({
-    //     msg:'删除成功'
-    // });
-    // UserModel.remove(wherestr, function(err, res){
-        // if (err) {
-        //     console.log("Error:" + err);
-        // }
-        // else {
-        //     res.json({
-        //         msg:'删除成功'
-        //     });
-        // }
-    // })
+});
+api.delete("/article/delete", async function(req, res) {
+    var sql = `delete from article  where id = ${req.body.id}`
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('删除失败', err.message);
+        }else{
+            res.json({
+                code: 0,
+                msg: ''
+            })
+        }
+    });
 });
 
 api.post("/admin/user/login", async function(req, res) {
@@ -106,11 +127,17 @@ api.post("/admin/user/register", async function(req, res) {
     connection.query(sql, t, function (err, result) {
         if(err){
             res.status(200)
-            res.json("失败")
+            res.json({
+                msg: 'error',
+                code: 400
+            })
             console.log(err)
         }else{
             res.status(200)
-            res.json("成功")
+            res.json({
+                msg: '',
+                code: 0
+            })
         }
     })
 });
