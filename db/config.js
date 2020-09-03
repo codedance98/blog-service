@@ -3,5 +3,6 @@ module.exports ={
     port: '3306',
     user: 'root',
     password: '123456',
-    database: 'myProject'
+    database: 'myProject',
+    timezone: '08:00'
 }

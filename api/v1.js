@@ -37,7 +37,6 @@ api.get("/article/findAll", function(req, res) {
             console.log('err:', err.message);
         }else{
             result = result.map((item)=>{
-                console.log(item.type)
                 return {
                     ...item,
                     type: item.type ? item.type.split(',') : ''
@@ -58,7 +57,7 @@ api.get("/article/findOne", function(req, res) {
         if (err) {
             console.log('err:', err.message);
         }
-        result[0].type = result[0].type ? result[0].type.split(',') : ''
+        result[0].type = result[0].type ? result[0].type.split(',') : '';
         res.status(200),
         res.json({
             code: 0,
