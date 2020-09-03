@@ -70,7 +70,6 @@ api.get("/article/findOne", function(req, res) {
 api.put("/article/update", function(req, res) {
     let t  = req.body
     console.log(t.type)
-    // let sql = `update article set title = '${t.title}' , type = '${t.type}' , content = '${t.content}' where id = '${t.id}'`;
     let sql = `update article set title = '${t.title}' , type = '${t.type.join(',')}' , content = '${t.content}' where id = '${t.id}'`;
     connection.query(sql, function (err, result) {
         if (err) {
