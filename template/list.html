@@ -8,14 +8,19 @@
     <style>
       table{
         border-collapse:collapse;
-        border:1px solid #666'
+        border:1px solid #666;
+        visibility: hidden;
+      }
+      button{
+        visibility: hidden;
       }
     </style>
 </head>
 <body>
+    <p>nodejs 服务已经启动</p>
     <button>新增</button>
     <table border=1></table>
-    <p class='total'>总数:0</p>
+    <!-- <p class='total'>总数:0</p> -->
 </body>
 <script>
   document.querySelector('button').onclick = function(e){
