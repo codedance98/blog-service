@@ -8,12 +8,13 @@ api.post("/article/create", function(req, res) {
     console.log('进入create')
     let t = {
         title: req.body.title,
-        type: req.body.type.join(','),
+        type: req.body.type ? req.body.type.join(',') : '',
         content: req.body.content
     };
+    console.log(23332)
     var sql = 'insert into article set title=? , type=? , content=?'
-    var add_value = [t.title, t.type, t.content]
-    connection.query(sql, add_value, function (err, result) {
+    var data = [t.title, t.type, t.content]
+    connection.query(sql, data, function (err, result) {
         if (err) {
             console.log(err);
             res.json({
@@ -30,7 +31,7 @@ api.post("/article/create", function(req, res) {
 });
 
 api.get("/article/findAll", function(req, res) {
-    console.log('findall')
+    console.log('进入findall')
     var sql = 'select * from article';
     connection.query(sql, function (err, result) {
         if (err) {
@@ -52,8 +53,10 @@ api.get("/article/findAll", function(req, res) {
     });
 });
 api.get("/article/findOne", function(req, res) {
-    let sql = `select * from article where id = '${req.query.id}'`;
-    connection.query(sql, function (err, result) {
+    console.log('进入findOne')
+    let data = [req.query.id];
+    let sql = `select * from article where id = ?`;
+    connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
         }
@@ -67,12 +70,13 @@ api.get("/article/findOne", function(req, res) {
     });
 });
 api.put("/article/update", function(req, res) {
+    console.log('进入update')
     let t  = req.body
     console.log(t)
-    let add_value = [t.title, t.type.join(','), t.content];
+    let data = [t.title, t.type ? t.type.join(','): '', t.content, t.id];
     // let sql = `update article set title = '${t.title}' , type = '${t.type.join(',')}' , content = '${connection.escape(t.content)}' where id = '${t.id}'`;
-    let sql = `update article set title = ? , type = ? , content = ? where id = '${t.id}'`;
-    connection.query(sql, add_value, function (err, result) {
+    let sql = `update article set title = ? , type = ? , content = ? where id = ?`;
+    connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
         }
@@ -84,6 +88,7 @@ api.put("/article/update", function(req, res) {
     });
 });
 api.delete("/article/delete", async function(req, res) {
+    console.log('进入delete')
     var sql = `delete from article  where id = ${req.body.id}`
     connection.query(sql, function (err, result) {
         if (err) {
@@ -122,9 +127,9 @@ api.post("/admin/user/login", async function(req, res) {
 });
 
 api.post("/admin/user/register", async function(req, res) {
-    let t = [req.body.account, req.body.password]
+    let data = [req.body.account, req.body.password]
     let sql = `insert into admin_user set account=?, password=?`;
-    connection.query(sql, t, function (err, result) {
+    connection.query(sql, data, function (err, result) {
         if(err){
             res.status(200)
             res.json({
