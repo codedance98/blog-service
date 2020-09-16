@@ -11,14 +11,13 @@ api.post("/article/create", function(req, res) {
         type: req.body.type ? req.body.type.join(',') : '',
         content: req.body.content
     };
-    console.log(23332)
     var sql = 'insert into article set title=? , type=? , content=?'
     var data = [t.title, t.type, t.content]
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log(err);
             res.json({
-                msg: '错误',
+                msg: err,
                 code: 400
             })  
         }else{
@@ -36,6 +35,10 @@ api.get("/article/findAll", function(req, res) {
     connection.query(sql, function (err, result) {
         if (err) {
             console.log('err:', err.message);
+            res.json({
+                msg: err,
+                code: 400
+            })
         }else{
             result = result.map((item)=>{
                 return {
@@ -55,19 +58,38 @@ api.get("/article/findAll", function(req, res) {
 api.get("/article/findOne", function(req, res) {
     console.log('进入findOne')
     let data = [req.query.title];
-    let sql = `select * from article where title = ?`;
+    let sql = `update article set browse = browse + 1 where title = ?`;
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
+            res.json({
+                msg: err,
+                code: 400
+            })
+        }else{
+            let sql = `select * from article where title = ?`;
+            connection.query(sql, data, function (err, result) {
+                if (err) {
+                    console.log('err:', err.message);
+                    res.json({
+                        msg: err,
+                        code: 400
+                    })
+                }else{
+                    result[0].type = result[0].type ? result[0].type.split(',') : '';
+                    res.status(200),
+                    res.json({
+                        code: 0,
+                        msg: '',
+                        data: result[0]
+                    })
+                }
+            });
         }
-        result[0].type = result[0].type ? result[0].type.split(',') : '';
-        res.status(200),
-        res.json({
-            code: 0,
-            msg: '',
-            data: result[0]
-        })
     });
+
+    
+    
 });
 api.put("/article/update", function(req, res) {
     console.log('进入update')
@@ -79,12 +101,18 @@ api.put("/article/update", function(req, res) {
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
+            res.json({
+                msg: err,
+                code: 400
+            })
+        }else{
+            res.status(200),
+            res.json({
+                code: 0,
+                msg: ''
+            })
         }
-        res.status(200),
-        res.json({
-            code: 0,
-            msg: ''
-        })
+        
     });
 });
 api.delete("/article/delete", async function(req, res) {
