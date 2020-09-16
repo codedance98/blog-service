@@ -63,6 +63,13 @@ api.get("/article/findOneById", function(req, res) {
         if (err) {
             console.log('err:', err.message);
         }
+        result.type = result.type ? result.type.split(',') : '';
+        res.status(200),
+        res.json({
+            code: 0,
+            msg: '',
+            data: result
+        })
     });
 });
 api.get("/article/findOne", function(req, res) {
