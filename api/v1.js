@@ -54,8 +54,8 @@ api.get("/article/findAll", function(req, res) {
 });
 api.get("/article/findOne", function(req, res) {
     console.log('进入findOne')
-    let data = [req.query.id];
-    let sql = `select * from article where id = ?`;
+    let data = [req.query.title];
+    let sql = `select * from article where title = ?`;
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
