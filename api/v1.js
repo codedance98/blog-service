@@ -55,6 +55,16 @@ api.get("/article/findAll", function(req, res) {
         }
     });
 });
+api.get("/article/findOneById", function(req, res) {
+    console.log('进入findOne')
+    let data = [req.query.id];
+    let sql = `select * from article where id = ?`;
+    connection.query(sql, data, function (err, result) {
+        if (err) {
+            console.log('err:', err.message);
+        }
+    });
+});
 api.get("/article/findOne", function(req, res) {
     console.log('进入findOne')
     let data = [req.query.title];
