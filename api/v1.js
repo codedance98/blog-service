@@ -75,7 +75,7 @@ api.get("/article/findOneById", function(req, res) {
 api.get("/article/findOne", function(req, res) {
     console.log('进入findOne')
     let data = [req.query.title];
-    let sql = `update article set browse = browse + 1 where title = ?`;
+    let sql = `update article set browse = browse + 1 where title_en = ?`;
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
@@ -84,7 +84,7 @@ api.get("/article/findOne", function(req, res) {
                 code: 400
             })
         }else{
-            let sql = `select * from article where title = ?`;
+            let sql = `select * from article where title_en = ?`;
             connection.query(sql, data, function (err, result) {
                 if (err) {
                     console.log('err:', err.message);
