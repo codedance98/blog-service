@@ -11,7 +11,7 @@ api.post("/article/create", function(req, res) {
         type: req.body.type ? req.body.type.join(',') : '',
         content: req.body.content
     };
-    var sql = 'insert into article set title=? , type=? , content=?'
+    var sql = 'insert into article set title=? , type=? , content=? , title_en = ?'
     var data = [t.title, t.type, t.content]
     connection.query(sql, data, function (err, result) {
         if (err) {
@@ -113,8 +113,7 @@ api.put("/article/update", function(req, res) {
     let t  = req.body
     console.log(t)
     let data = [t.title, t.type ? t.type.join(','): '', t.content, t.id];
-    // let sql = `update article set title = '${t.title}' , type = '${t.type.join(',')}' , content = '${connection.escape(t.content)}' where id = '${t.id}'`;
-    let sql = `update article set title = ? , type = ? , content = ? where id = ?`;
+    let sql = `update article set title = ? , type = ? , content = ? , title_en = ?  where id = ?`;
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log('err:', err.message);
