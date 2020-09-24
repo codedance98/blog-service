@@ -13,7 +13,7 @@ api.post("/article/create", function(req, res) {
         title_en: req.body.title_en
     };
     var sql = 'insert into article set title=? , type=? , content=? , title_en = ?'
-    var data = [t.title, t.type, t.content]
+    var data = [t.title, t.type, t.content, t.title_en]
     connection.query(sql, data, function (err, result) {
         if (err) {
             console.log(err);
