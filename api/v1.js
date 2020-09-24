@@ -9,7 +9,8 @@ api.post("/article/create", function(req, res) {
     let t = {
         title: req.body.title,
         type: req.body.type ? req.body.type.join(',') : '',
-        content: req.body.content
+        content: req.body.content,
+        title_en: req.body.title_en
     };
     var sql = 'insert into article set title=? , type=? , content=? , title_en = ?'
     var data = [t.title, t.type, t.content]
@@ -112,7 +113,7 @@ api.put("/article/update", function(req, res) {
     console.log('进入update')
     let t  = req.body
     console.log(t)
-    let data = [t.title, t.type ? t.type.join(','): '', t.content, t.id];
+    let data = [t.title, t.type ? t.type.join(','): '', t.content, t.title_en, t.id];
     let sql = `update article set title = ? , type = ? , content = ? , title_en = ?  where id = ?`;
     connection.query(sql, data, function (err, result) {
         if (err) {
