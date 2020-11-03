@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id='app'>
+    <div>
+      <h1>sendgrid邮件群发工具</h1>
+      <br/>
+      (文本内容和html内容的区别：如果使用支持html渲染的邮件可视化系统查看，就会显示html内容，否则显示文本内容)
+      <br/>
+      <p>
+        <span>发件人：Info@filecoinmine.me (由于和api key绑定，暂时不可设置)</span>
+      </p>
+      <p>
+        <span>收件人：</span><textarea class='toArr' rows='5' placeholder="多个收件人用英文逗号分割，如:111@gmail.com,222@gmail.com"></textarea>
+      </p>
+      <p>
+        <span>标题：</span><textarea class='subject' rows='5'></textarea>
+      </p>
+      <p>
+        <span>html内容：</span><textarea class='html' rows='5'></textarea>
+      </p>
+      <p>
+        <span>文本内容：</span><textarea class='text' rows='5'></textarea>
+      </p>
+      <br/>
+      <button @click='clickHandle' class='button'>发送</button>
+    </div>
+    <div id='result'>
+      发布结果：(202即成功)
+      <br/>
+    </div>
+  </div>
+</body>
+<script>
+  document.querySelector('button').onclick = function(e){
+    let obj = {
+      toArr: document.querySelector('.toArr').value.split(','),
+      subject: document.querySelector('.subject').value,
+      contentText: document.querySelector('.text').value,
+      contentHtml: document.querySelector('.html').value
+    }
+    console.log(obj)
+    fetch('/v1/mail/send',{
+      method: 'post',
+      headers: {
+  　　　　'Content-Type': 'application/json'
+  　　 },
+      body: JSON.stringify(obj)
+    }).then(function(response) {
+      return response.json();
+    }).then(function(response) {
+      console.log(response)
+      response.data.forEach((item)=> {
+        console.log(item[0])
+        document.querySelector('#result').append(`${item[0].statusCode}  `)
+      })
+      
+    })
+  }
+</script>
+</html>

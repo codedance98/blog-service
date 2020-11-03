@@ -2,6 +2,34 @@ const express = require("express");
 const db = require('mongoose');
 let api = express.Router();
 
+
+const sgMail = require("@sendgrid/mail");
+function sendHandle(toArray, subject, text, html) {
+  sgMail.setApiKey('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');
+  toArray.forEach((item, idx) => {
+    unil(item, subject, text, html)
+  })
+}
+function unil(_toAdd, subject, text, html){
+  const msg = {
+    to: _toAdd,
+    from: 'Info@filecoinmine.me',
+    subject: subject,
+    text: text,
+    html: html
+  }
+  sgMail.send(msg).then((res)=> {
+    console.log(`发送${_toAdd}邮件：成功`)
+    console.log(res)
+  }).catch((err)=> {
+    console.log(`发送${_toAdd}邮箱：失败`)
+    console.log(err)
+  })
+}
+
+// sendHandle(['codedance98@gmail.com', '1403021@qq.com'])
+
+
 const connection = require ('../db/main.js');
 
 api.post("/article/create", function(req, res) {
@@ -191,5 +219,51 @@ api.post("/admin/user/register", async function(req, res) {
         }
     })
 });
+// let a = {
+//     toArr:['codedance98@gmail', '1403021@qq.com'],
+//     subject:'title11',
+//     contentText:'123123',
+//     contentHtml:'<span>html</span>'
+// }
 
+api.post("/mail/send",function(req, res) {
+    let res_another = res;
+    let result = [];
+    console.log(req.body)
+    console.log(typeof req.body)
+    // req.body.toArr = req.body.toArr.split(',');
+    req.body.toArr.forEach((item, idx) => {
+        sgMail.setApiKey('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');
+        const msg = {
+            to: item,
+            from: 'Info@filecoinmine.me',
+            subject: req.body.subject,
+            text: req.body.contentText,
+            html: req.body.contentHtml
+        }
+        sgMail.send(msg).then((res)=> {
+            console.log(`发送${item}邮件：成功`)
+            console.log(res)
+            res.email = item;
+            result.push(res)
+            if(result.length === req.body.toArr.length){
+                res_another.status(200)
+                res_another.json({
+                    data: result
+                })
+            }
+        }).catch((err)=> {
+            console.log(`发送${item}邮箱：失败`)
+            console.log(err)
+            res.email = item;
+            result.push(err)
+            if(result.length === req.body.toArr.length){
+                res_another.status(200)
+                res_another.json({
+                    data: result
+                })
+            }
+        })
+    })
+});
 module.exports = api;
