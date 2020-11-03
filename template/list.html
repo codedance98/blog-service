@@ -1,109 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>node demo</title>
-    <style>
-      table{
-        border-collapse:collapse;
-        border:1px solid #666;
-        visibility: hidden;
-      }
-      button{
-        visibility: hidden;
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sendgrid邮件群发工具</title>
 </head>
 <body>
-    <p>nodejs 服务已经启动</p>
-    <button>新增</button>
-    <table border=1></table>
-    <!-- <p class='total'>总数:0</p> -->
+  <div id='app'>
+    <div>
+      <h1>sendgrid邮件群发工具</h1>
+      <br/>
+      (文本内容和html内容的区别：如果使用支持html渲染的邮件可视化系统查看，就会显示html内容，否则显示文本内容)
+      <br/>
+      <p>
+        <span>发件人：Info@filecoinmine.me (由于和api key绑定，暂时不可设置)</span>
+      </p>
+      <p>
+        <span>收件人：</span><textarea class='toArr' rows='5' placeholder="多个收件人用英文逗号分割，如:111@gmail.com,222@gmail.com"></textarea>
+      </p>
+      <p>
+        <span>标题：</span><textarea class='subject' rows='5'></textarea>
+      </p>
+      <p>
+        <span>html内容：</span><textarea class='html' rows='5'></textarea>
+      </p>
+      <p>
+        <span>文本内容：</span><textarea class='text' rows='5'></textarea>
+      </p>
+      <br/>
+      <button @click='clickHandle' class='button'>发送</button>
+    </div>
+    <div id='result'>
+      发布结果：(202即成功)
+      <br/>
+    </div>
+  </div>
 </body>
 <script>
   document.querySelector('button').onclick = function(e){
-    window.location.href = '/add';
-  }
-  // 获取兄弟节点
-  function siblings(elm){
-    var a = [];
-    var p = elm.parentNode.parentNode.children;
-    for(var i = 0; i < p.length; i++){
-      if(p[i].nodeType == 1 && p[i] != elm){
-        a.push(p[i])
-      }
+    let obj = {
+      toArr: document.querySelector('.toArr').value.split(','),
+      subject: document.querySelector('.subject').value,
+      contentText: document.querySelector('.text').value,
+      contentHtml: document.querySelector('.html').value
     }
-    return a;
-  }
-  
-  window.onload = function(){
-    getData();
-    document.querySelector('table').addEventListener('click', function(e) {
-      console.log(e.target.nodeName)
-      if (e.target.nodeName === 'BUTTON') {
-          let siblingsNode = siblings(e.target);
-          let itemID = siblingsNode[0].innerHTML;
-          if(e.target.innerHTML === '编辑'){
-            window.open(`/edit?id=${itemID}`)
-          }else if(e.target.innerHTML === '删除'){
-            if(confirm(`你确定要删除ID为${itemID}这项吗`)){
-              del(itemID)
-            }else{
-
-            }
-          }
-      }
-    })
-  };
-  // 获取列表数据
-  function getData(){
-    fetch('/v1/findAll',{method: 'GET'}).then(function(response) {
-      return response.json();
-    })
-    .then(function(response) {
-      console.log(response)
-      let dom = document.querySelector('table');
-      dom.innerHTML += `<tr>
-        <td>id</td>
-        <td>标题</td>
-        <td>作者</td>
-        <td>内容</td>
-        <td>编辑</td>
-      </tr>`
-      document.querySelector('.total').innerHTML = `总数:${response.length}`  
-      response.forEach((item)=>{
-        document.querySelector('table').innerHTML += `
-        <tr>
-          <td id='itemId'>${item.id}</td>
-          <td>${item.title}</td>
-          <td>${item.author}</td>
-          <td>${item.content}</td>
-          <td><button>编辑</button><button>删除</button></td>
-        </tr>` 
-      })
-    });
-  }
-  // 删除方法
-  function del(_id){
-    fetch('/v1/delete',{
-      method: 'DELETE',
-      mode:'cors',
+    console.log(obj)
+    fetch('/v1/mail/send',{
+      method: 'post',
       headers: {
   　　　　'Content-Type': 'application/json'
-  　　},
-      body:JSON.stringify({
-        id:_id
-      })
+  　　 },
+      body: JSON.stringify(obj)
+    }).then(function(response) {
+      return response.json();
     }).then(function(response) {
       console.log(response)
-      return response.json();
-    }).then((response)=>{
-      alert(`删除成功`);
-      console.log(response)
-    }).catch((e)=>{
-      console.log(e)
+      response.data.forEach((item)=> {
+        console.log(item[0])
+        document.querySelector('#result').append(`${item[0].statusCode}  `)
+      })
+      
     })
   }
 </script>
