@@ -29,8 +29,10 @@ const server = app.listen(8081, ()=>{
 })
 
 app.get('/',(req, res) => {
-    // res.sendfile(`${__dirname}/template/list.html`);
-    // res.setHeader('Content-Type', 'text/html');
+    res.sendfile(`${__dirname}/template/list.html`);
+    res.setHeader('Content-Type', 'text/html');
+})
+app.get('/sender',(req, res) => {
     res.sendfile(`${__dirname}/template/send.html`);
     res.setHeader('Content-Type', 'text/html');
 })
