@@ -3,10 +3,21 @@ let api = express.Router();
 const connection = require ('../db/main.js');
 
 api.post("/girl/create", function(req, res) {
-    let t = req.body;
-    var sql = 'insert into girl set nickname=?, born_year=?, job=?, native_place=?, work_place=?, ref=?, character=?, other=?'
-    var data = [t.nickname, t.born_year, t.job, t.native_place, t.work_place, t.ref, t.character, t.other]
+    let t = {
+      nickname: req.body.nickname,
+      born_year: req.body.born_year,
+      job: req.body.job,
+      native_place: req.body.native_place,
+      work_place: req.body.work_place,
+      ref: req.body.ref,
+      specialty: req.body.specialty,
+      other:req.body.other
+  };
+    let sql = 'insert into girl set nickname=? , born_year=? , job=? , native_place=? , work_place=? , ref=? , specialty=? , other=?'
+    // var sql = 'insert into article set title=? , type=? , content=? , title_en = ?'
+    let data = [t.nickname, t.born_year, t.job, t.native_place, t.work_place, t.ref, t.specialty, t.other]
     connection.query(sql, data, function (err, result) {
+      console.log(err, result)
         if (err) {
             console.log(err);
             res.json({
@@ -65,8 +76,8 @@ api.get("/girl/get", function(req, res) {
 
 api.put("/girl/update", function(req, res) {
   let t = req.body
-  let data = [t.nickname, t.born_year, t.job, t.native_place, t.work_place, t.ref, t.character, t.other, t,id]
-  let sql = 'update girl set nickname=?, born_year=?, job=?, native_place=?, work_place=?, ref=?, character=?, other=? where id=?'
+  let data = [t.nickname, t.born_year, t.job, t.native_place, t.work_place, t.ref, t.specialty, t.other, t.id]
+  let sql = 'update girl set nickname=?, born_year=?, job=?, native_place=?, work_place=?, ref=?, specialty=?, other=? where id=?'
   connection.query(sql, data, function (err, result) {
       if (err) {
           console.log('err:', err.message);
