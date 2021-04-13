@@ -1,5 +1,6 @@
 const express = require("express");
 let api = express.Router();
+const connection = require ('../db/main.js');
 
 api.post("/girl/create", function(req, res) {
     let t = req.body;
