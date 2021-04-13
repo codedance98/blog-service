@@ -1,35 +1,5 @@
 const express = require("express");
-const db = require('mongoose');
 let api = express.Router();
-
-
-const sgMail = require("@sendgrid/mail");
-function sendHandle(toArray, subject, text, html) {
-  sgMail.setApiKey('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');
-  toArray.forEach((item, idx) => {
-    unil(item, subject, text, html)
-  })
-}
-function unil(_toAdd, subject, text, html){
-  const msg = {
-    to: _toAdd,
-    from: 'Info@filecoinmine.me',
-    subject: subject,
-    text: text,
-    html: html
-  }
-  sgMail.send(msg).then((res)=> {
-    console.log(`发送${_toAdd}邮件：成功`)
-    console.log(res)
-  }).catch((err)=> {
-    console.log(`发送${_toAdd}邮箱：失败`)
-    console.log(err)
-  })
-}
-
-// sendHandle(['codedance98@gmail.com', '1403021@qq.com'])
-
-
 const connection = require ('../db/main.js');
 
 api.post("/article/create", function(req, res) {
@@ -85,8 +55,8 @@ api.get("/article/findAll", function(req, res) {
         }
     });
 });
+
 api.get("/article/findOneById", function(req, res) {
-    console.log('进入findOne')
     let data = [req.query.id];
     let sql = `select * from article where id = ?`;
     connection.query(sql, data, function (err, result) {
@@ -102,8 +72,8 @@ api.get("/article/findOneById", function(req, res) {
         })
     });
 });
+
 api.get("/article/findOne", function(req, res) {
-    console.log('进入findOne')
     let data = [req.query.title];
     let sql = `update article set browse = browse + 1 where title_en = ?`;
     connection.query(sql, data, function (err, result) {
@@ -133,11 +103,9 @@ api.get("/article/findOne", function(req, res) {
                 }
             });
         }
-    });
-
-    
-    
+    }); 
 });
+
 api.put("/article/update", function(req, res) {
     console.log('进入update')
     let t  = req.body
@@ -161,6 +129,7 @@ api.put("/article/update", function(req, res) {
         
     });
 });
+
 api.delete("/article/delete", async function(req, res) {
     console.log('进入delete')
     var sql = `delete from article  where id = ${req.body.id}`
@@ -176,95 +145,4 @@ api.delete("/article/delete", async function(req, res) {
     });
 });
 
-api.post("/admin/user/login", async function(req, res) {
-    let t = {
-        account: req.body.account,
-        password: req.body.password
-    };
-    let sql = `select * from admin_user where account = '${t.account}' and password = '${t.password}'`;
-    // console.log(sql)
-    connection.query(sql, function (err, result) {
-        // console.log(result)
-        if (err || result.length == 0) {
-            res.json({
-                msg: '账号或密码错误',
-                code: 400
-            })
-            console.log(err)
-        } else {
-            res.json({
-                msg: '操作成功',
-                code: 0
-            })
-        }
-    })
-});
-
-api.post("/admin/user/register", async function(req, res) {
-    let data = [req.body.account, req.body.password]
-    let sql = `insert into admin_user set account=?, password=?`;
-    connection.query(sql, data, function (err, result) {
-        if(err){
-            res.status(200)
-            res.json({
-                msg: 'error',
-                code: 400
-            })
-            console.log(err)
-        }else{
-            res.status(200)
-            res.json({
-                msg: '',
-                code: 0
-            })
-        }
-    })
-});
-// let a = {
-//     toArr:['codedance98@gmail', '1403021@qq.com'],
-//     subject:'title11',
-//     contentText:'123123',
-//     contentHtml:'<span>html</span>'
-// }
-
-api.post("/mail/send",function(req, res) {
-    let res_another = res;
-    let result = [];
-    console.log(req.body)
-    console.log(typeof req.body)
-    // req.body.toArr = req.body.toArr.split(',');
-    req.body.toArr.forEach((item, idx) => {
-        sgMail.setApiKey('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');
-        const msg = {
-            to: item,
-            from: 'Info@filecoinmine.me',
-            subject: req.body.subject,
-            text: req.body.contentText,
-            html: req.body.contentHtml
-        }
-        sgMail.send(msg).then((res)=> {
-            console.log(`发送${item}邮件：成功`)
-            console.log(res)
-            res.email = item;
-            result.push(res)
-            if(result.length === req.body.toArr.length){
-                res_another.status(200)
-                res_another.json({
-                    data: result
-                })
-            }
-        }).catch((err)=> {
-            console.log(`发送${item}邮箱：失败`)
-            console.log(err)
-            res.email = item;
-            result.push(err)
-            if(result.length === req.body.toArr.length){
-                res_another.status(200)
-                res_another.json({
-                    data: result
-                })
-            }
-        })
-    })
-});
 module.exports = api;

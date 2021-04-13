@@ -5,7 +5,9 @@ const cors = require('cors')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
-const apiV1 = require('./api/v1.js');
+const common = require('./api/common.js');
+const girl = require('./api/girl.js');
+const article = require('./api/article.js');
 
 //设置跨域访问
 app.all('*', function (req, res, next) {
@@ -19,7 +21,9 @@ app.all('*', function (req, res, next) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/v1', apiV1);
+app.use('/v1', common);
+app.use('/v1', girl);
+app.use('/v1', article);
 app.use(cors());
 
 const server = app.listen(8081, ()=>{
@@ -48,7 +52,6 @@ app.get('/edit',(req, res) => {
     res.sendfile(`${__dirname}/template/edit.html`);
     res.setHeader('Content-Type', 'text/html');
 })
-
 app.use(function(req, res) {
     res.status(404).send({url: req.originalUrl + ' not found'})
 });
